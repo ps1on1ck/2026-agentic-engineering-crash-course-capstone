@@ -15,6 +15,7 @@
     "hooks:selftest": "node scripts/hooks-selftest.mjs",
     "agent:log": "node scripts/agent-log-summary.mjs",
     "agent:report": "node .agents/skills/agent-log-report/scripts/report.mjs",
+    "verify": "node scripts/verify-report.mjs",
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm agents:check"
   },
   "dependencies": {
