@@ -13,8 +13,14 @@ check that fails — do not silently work around any of them, do not decide for 
    `oleksandr-sorokin`, not from another feature branch. Tell the human to switch back
    (`git switch oleksandr-sorokin`) — do not run that for them if it might discard anything; check
    status first.
-2. `git status --short` must be empty. If not, STOP and list what is uncommitted — do not stash or
-   discard anything yourself.
+2. `git status --short -- . ':!.agent-log/actions.jsonl'` must be empty (this excludes ONLY the
+   audit log — `.agent-log/actions.jsonl` is rewritten by the hooks on every tool call, including the
+   ones this very preflight check just ran, so it is expected to show as changed and must never block
+   a branch switch on its own). Anything else in the output means STOP and list what is uncommitted —
+   do not stash or discard anything yourself. If `.agent-log/actions.jsonl` is the only change, leave
+   it as-is: it carries over onto the new branch uncommitted and gets folded into that branch's own
+   first commit, which is correct — its new lines belong to the work that produced them, not to
+   whatever came before.
 3. `git fetch origin`, then compare local `oleksandr-sorokin` to `origin/oleksandr-sorokin`:
    `git rev-list --left-right --count oleksandr-sorokin...origin/oleksandr-sorokin`.
    - behind only → fast-forward: `git merge --ff-only origin/oleksandr-sorokin`.
