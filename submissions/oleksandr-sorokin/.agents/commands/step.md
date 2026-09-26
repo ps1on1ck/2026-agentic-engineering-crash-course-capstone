@@ -30,10 +30,12 @@ Do exactly these steps, in order, and stop immediately (report why) if any check
    - a Conventional Commits summary line (`feat:`, `test:`, `spec:`, `fix:`, `docs:`, `chore:`, `review:`);
    - a body of 3-6 lines: what changed, and why — this becomes the PR description when the human runs
      `gh pr create --fill`, so write it for a reviewer who has not seen this conversation;
-   - end the body with two lines, filled honestly (not "all went smoothly" if it did not):
+   - end the body with three lines, filled honestly (an empty or "none" third line is fine and expected
+     sometimes — do not force one if nothing actually went wrong, but do not omit the line either):
      ```
      Agent did: <one line>
      Human decided: <leave this line for the human to edit before they push>
+     What went wrong: <one line, or "none this step">
      ```
 9. Do NOT push and do NOT open a PR. Stop here, show `git log -1 --stat`, and tell the human the branch
    name so they can review the diff, edit the "Human decided" line, and push themselves.
