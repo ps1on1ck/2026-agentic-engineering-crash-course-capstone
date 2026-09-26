@@ -8,22 +8,52 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# Project rules
+# ETF Dashboard — project rules
 
-Trust level 1 ("Assistant"): propose, then wait for a human decision before changing more
-than one file or running anything that is not on the allow-list in `.claude/settings.json`.
+A small Next.js web app: a list of ETFs with filters, sorting and a details page. Demo data only —
+no live market data, no investment advice. It is a course capstone: every step must leave evidence
+(a file, a commit, a test run, a log line).
+
+## Scope (enforced by a hook)
+
+- This folder is the whole project. Write only inside it. `.claude/hooks/guard-scope.mjs` blocks
+  writes outside it; the scope is in `.agents/scope.json`. Do not try to work around a block — report it.
+- `.agents/` is the source of truth for skills, hooks and subagents. `.claude/{skills,hooks,agents}`
+  are generated copies: edit `.agents/`, then run `pnpm agents:sync`.
+- Only the human edits `.agents/scope.json` and `.claude/settings.json`.
 
 ## Commands (pnpm only — never npm or yarn)
 
-- `pnpm dev` — dev server (Turbopack, http://localhost:3000). Never start a second one.
-- `pnpm check` — typecheck + lint + tests. Run it before saying a task is done and quote the output.
-- `pnpm typecheck` = `next typegen && tsc --noEmit` · `pnpm lint` = `eslint` (`next lint` no longer exists) · `pnpm test` = `vitest run`
-- `pnpm agent:log` — summary of `.agent-log/actions.jsonl`: what you actually did this session.
+- `pnpm dev` — dev server (http://localhost:3000). Never start a second one.
+- `pnpm check` — typecheck + lint + tests + `agents:check` (+ `spec:validate` once OpenSpec is set up).
+  Run it before you say a task is done, and quote the result.
+- `pnpm typecheck` = `next typegen && tsc --noEmit` · `pnpm lint` = `eslint` · `pnpm test` = `vitest run`
+- `pnpm hooks:selftest` — tests the hooks without an agent. `pnpm agent:log` — what you actually did.
+- If a command in this file does not exist yet, say so. Do not invent a replacement.
+
+## Workflow (spec first)
+
+1. Every feature starts as an OpenSpec change in `openspec/changes/<id>/`. The human approves it before code.
+2. Write failing tests for the change scenarios first. They are committed red.
+3. Implement until `pnpm check` is green (a loop may do this).
+4. A separate reviewer subagent checks the diff against the spec. You do not review your own work.
+5. If reality differs from the spec, update the spec in its own commit and write why.
+
+## Trust levels
+
+- Level 1 — propose and wait: config, dependencies, scaffolding, anything in Boundaries.
+- Level 2 — edit files freely, ask for commands not on the allow-list: code and tests inside an approved change.
+- Level 3 — run to green and bring evidence: `pnpm agent:loop` runs. Stop and report at the iteration limit.
 
 ## Definition of done
 
 - `pnpm check` is green; new behaviour has a test next to the code (`*.test.ts` / `*.test.tsx`).
 - Evidence, not claims: report the command you ran and its exit code / test count.
+
+## Docs map (link, do not copy between them)
+
+why/what → `docs/PRD.md` · behaviour → `openspec/specs/` · how → `docs/architecture.md` ·
+UI → `docs/design.md` · data → `docs/data-model.md` · decisions → `docs/decisions/`
 
 ## Next.js 16 rules that differ from what you may remember
 
@@ -31,19 +61,19 @@ than one file or running anything that is not on the allow-list in `.claude/sett
 - Request interception is `proxy.ts` (exports `proxy`), not `middleware.ts`.
 - Caching is opt-in (`cacheComponents`, `'use cache'`) — do not enable it without asking.
 - Server Components by default; `'use client'` only for hooks, browser APIs, event handlers.
-- When unsure about an API, read `node_modules/next/dist/docs/` first (see the block above).
 
 ## Conventions the linter does not enforce
 
-- Pure logic lives in `lib/` (no React or Next imports) with a Vitest test beside it; route handlers in `app/api/**/route.ts` stay thin.
-- Import alias `@/*` = repo root. Ukrainian UI copy; English code, comments and commit messages.
-- Conventional Commits (`feat:`, `fix:`, `chore:`), one logical change per commit.
+- Pure logic lives in `lib/` (no React or Next imports) with a Vitest test beside it.
+- Filter, sort and page state lives in the URL (`searchParams`), so every view has a shareable link.
+- Import alias `@/*` = project root. English everywhere: UI copy, code, comments, docs, commit messages.
+- Conventional Commits: `spec:`, `test:`, `feat:`, `fix:`, `review:`, `docs:`, `chore:` — one logical change per commit.
 
 ## Boundaries
 
-- Ask before: adding a dependency, editing `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `.claude/settings.json`, `.mcp.json` or CI.
-- Never: touch `.env*` (a hook blocks it anyway), delete tests or disable lint rules to get green, `git push --force`, `rm -rf`.
+- Ask before: adding a dependency, editing `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `.mcp.json` or `package.json` scripts.
+- Never: touch `.env*` (a hook blocks it), delete or skip tests, disable lint rules to get green,
+  `git push --force`, `rm -rf`, fetch live market data.
 - Do not edit the managed Next.js block above — `next dev` re-adds it.
 
-<!-- Maintainers: keep everything below the managed block under ~50 lines. Add a rule only after the
-     agent gets something wrong twice. No repo overview, no file map, no linter rules, no API docs. -->
+<!-- Maintainers: keep our part under ~80 lines. Add a rule only after the agent gets something wrong twice. -->
