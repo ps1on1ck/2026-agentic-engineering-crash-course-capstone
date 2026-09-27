@@ -63,6 +63,8 @@ const lines = [
   `|---------|------|----------|-------|`,
 ];
 
+const scriptMissing = (r) => r.exit !== 0 && (r.stderr.includes("not found") || r.stderr.includes("Missing script") || r.stderr.includes("ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL"));
+
 for (const r of results) {
   const status = r.exit === 0 ? "✅ 0" : `❌ ${r.exit}`;
   const dur = `${(r.ms / 1000).toFixed(1)}s`;
@@ -85,6 +87,5 @@ const file = join(dir, `${date}-${sha}.md`);
 writeFileSync(file, out, "utf8");
 
 console.log(`Report written: ${file}`);
-const scriptMissing = (r) => r.exit !== 0 && (r.stderr.includes("not found") || r.stderr.includes("Missing script") || r.stderr.includes("ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL"));
 const anyFail = results.some((r) => r.exit !== 0 && !scriptMissing(r));
 process.exit(anyFail ? 1 : 0);
