@@ -16,7 +16,9 @@
     "agent:log": "node scripts/agent-log-summary.mjs",
     "agent:report": "node .agents/skills/agent-log-report/scripts/report.mjs",
     "verify": "node scripts/verify-report.mjs",
-    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm agents:check"
+    "openspec": "node scripts/openspec.mjs",
+    "spec:validate": "node scripts/openspec.mjs validate --all --strict --no-interactive",
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm agents:check && pnpm spec:validate"
   },
   "dependencies": {
     "next": "16.3.6",
@@ -24,6 +26,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@fission-ai/openspec": "^1.13.2",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
