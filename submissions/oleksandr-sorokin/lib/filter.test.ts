@@ -12,12 +12,12 @@ const ETFS: Etf[] = [
 ];
 
 describe("filterEtfs()", () => {
-  it.fails("no-op query returns all ETFs unchanged", () => {
+  it("no-op query returns all ETFs unchanged", () => {
     const result = filterEtfs(ETFS, {});
     expect(result).toHaveLength(ETFS.length);
   });
 
-  it.fails("search by ticker prefix returns matching ETFs", () => {
+  it("search by ticker prefix returns matching ETFs", () => {
     const result = filterEtfs(ETFS, { search: "IW" });
     expect(result.map((e) => e.ticker)).toContain("IWDA");
     // CR-7: both sides normalised to uppercase for consistent case-insensitive comparison
@@ -26,7 +26,7 @@ describe("filterEtfs()", () => {
     });
   });
 
-  it.fails("search by name substring returns matching ETFs", () => {
+  it("search by name substring returns matching ETFs", () => {
     const result = filterEtfs(ETFS, { search: "Vanguard" });
     expect(result.map((e) => e.ticker)).toContain("VWCE");
     result.forEach((e) => {
@@ -34,41 +34,41 @@ describe("filterEtfs()", () => {
     });
   });
 
-  it.fails("assetClass filter keeps only matching ETFs", () => {
+  it("assetClass filter keeps only matching ETFs", () => {
     const result = filterEtfs(ETFS, { assetClass: ["bond"] });
     expect(result.map((e) => e.ticker)).toContain("AGGH");
     result.forEach((e) => expect(e.assetClass).toBe("bond"));
   });
 
-  it.fails("region filter keeps only matching ETFs", () => {
+  it("region filter keeps only matching ETFs", () => {
     const result = filterEtfs(ETFS, { region: ["north-america"] });
     result.forEach((e) => expect(e.region).toBe("north-america"));
   });
 
-  it.fails("issuer filter keeps only matching ETFs", () => {
+  it("issuer filter keeps only matching ETFs", () => {
     const result = filterEtfs(ETFS, { issuer: ["Vanguard"] });
     expect(result).toHaveLength(1);
     expect(result[0].ticker).toBe("VWCE");
   });
 
-  it.fails("distribution filter keeps only accumulating ETFs", () => {
+  it("distribution filter keeps only accumulating ETFs", () => {
     const result = filterEtfs(ETFS, { distribution: ["accumulating"] });
     result.forEach((e) => expect(e.distribution).toBe("accumulating"));
   });
 
-  it.fails("maxTer boundary excludes ETFs above the threshold", () => {
+  it("maxTer boundary excludes ETFs above the threshold", () => {
     const result = filterEtfs(ETFS, { maxTer: 0.2 });
     result.forEach((e) => expect(e.ter).toBeLessThanOrEqual(0.2));
   });
 
-  it.fails("maxTer boundary includes ETFs exactly at the threshold", () => {
+  it("maxTer boundary includes ETFs exactly at the threshold", () => {
     const result = filterEtfs(ETFS, { maxTer: 0.2 });
     const tickers = result.map((e) => e.ticker);
     expect(tickers).toContain("IWDA"); // ter === 0.2 must be included
     expect(tickers).not.toContain("VWCE"); // ter === 0.22 must be excluded
   });
 
-  it.fails("multiple filters are combined (AND logic)", () => {
+  it("multiple filters are combined (AND logic)", () => {
     const result = filterEtfs(ETFS, {
       assetClass: ["equity"],
       issuer: ["iShares"],
@@ -79,7 +79,7 @@ describe("filterEtfs()", () => {
     });
   });
 
-  it.fails("returns empty array when no ETFs match", () => {
+  it("returns empty array when no ETFs match", () => {
     const result = filterEtfs(ETFS, { search: "ZZZNOMATCH99" });
     expect(result).toHaveLength(0);
   });
