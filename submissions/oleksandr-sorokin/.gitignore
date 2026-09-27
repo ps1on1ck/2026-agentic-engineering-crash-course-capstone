@@ -40,3 +40,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /docs/video-script.md
+/docs/video-script-ru.md

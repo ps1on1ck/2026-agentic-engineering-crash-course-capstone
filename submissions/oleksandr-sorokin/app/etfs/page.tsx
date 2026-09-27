@@ -45,10 +45,18 @@ export default async function EtfsPage({ searchParams }: Props) {
   const currentUrl = `/etfs${paramStr ? `?${paramStr}` : ""}`;
 
   return (
-    <main className="flex-1 overflow-x-auto px-4 py-6">
-      <EtfFilters />
-      <EtfTable items={result.items} sortBy={sortBy} sortDir={sortDir} currentUrl={currentUrl} />
-      <EtfPagination page={result.page} total={result.total} pageSize={DEFAULT_PAGE_SIZE} />
+    <main className="flex-1 flex gap-5 px-6 py-5 max-w-screen-2xl mx-auto w-full">
+      <div className="sticky top-5 self-start">
+        <EtfFilters />
+      </div>
+      <div className="flex-1 min-w-0 flex flex-col gap-3">
+        <div className="flex items-baseline justify-between">
+          <h1 className="text-base font-semibold">ETF Screener</h1>
+          <span className="text-xs" style={{ color: 'var(--muted)' }}>{result.total} funds</span>
+        </div>
+        <EtfTable items={result.items} sortBy={sortBy} sortDir={sortDir} currentUrl={currentUrl} />
+        <EtfPagination page={result.page} total={result.total} pageSize={DEFAULT_PAGE_SIZE} />
+      </div>
     </main>
   );
 }
