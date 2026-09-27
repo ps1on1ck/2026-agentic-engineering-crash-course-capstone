@@ -31,9 +31,10 @@ type Props = {
   items: Etf[];
   sortBy: string;
   sortDir: SortDir;
+  currentUrl?: string;
 };
 
-export default function EtfTable({ items, sortBy, sortDir }: Props) {
+export default function EtfTable({ items, sortBy, sortDir, currentUrl }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const hasFilters = FILTER_PARAM_KEYS.some((k) => searchParams.has(k));
@@ -91,7 +92,15 @@ export default function EtfTable({ items, sortBy, sortDir }: Props) {
           <tr key={etf.ticker}>
             {COLUMNS.map((col) => (
               <td key={col.key}>
-                <Link href={`/etfs/${etf.ticker}`}>{col.render(etf)}</Link>
+                <Link
+                href={
+                  currentUrl
+                    ? `/etfs/${etf.ticker}?ref=${encodeURIComponent(currentUrl)}`
+                    : `/etfs/${etf.ticker}`
+                }
+              >
+                {col.render(etf)}
+              </Link>
               </td>
             ))}
           </tr>
