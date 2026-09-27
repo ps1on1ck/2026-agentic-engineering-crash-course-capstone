@@ -23,7 +23,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <nav className="w-full px-4 py-3 border-b bg-white dark:bg-zinc-900">
+          <span className="font-semibold text-sm">ETF Dashboard</span>
+        </nav>
+        <div
+          className="w-full px-4 py-2 text-center text-xs bg-amber-50 text-amber-800 border-b border-amber-200"
+          role="banner"
+        >
+          Demo data — not investment advice
+        </div>
+        {children}
+      </body>
     </html>
   );
 }
