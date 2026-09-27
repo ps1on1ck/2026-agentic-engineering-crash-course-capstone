@@ -2,8 +2,8 @@
 
 ## 1. Filter logic — `lib/filter.ts`
 
-- [ ] 1.1 Write failing tests for `filterEtfs()` — commit red (tests already exist as `it.fails`; convert to `it` and verify `pnpm test` reports them as failing with the stub)
-- [ ] 1.2 Implement `filterEtfs(etfs, query)` in `lib/filter.ts`: text search (case-insensitive ticker prefix OR name substring), multi-select filters (assetClass, region, issuer, distribution, AND logic), maxTer boundary (inclusive) — verify `pnpm test lib/filter.test.ts` is green
+- [x] 1.1 Write failing tests for `filterEtfs()` — commit red (tests already exist as `it.fails`; convert to `it` and verify `pnpm test` reports them as failing with the stub)
+- [x] 1.2 Implement `filterEtfs(etfs, query)` in `lib/filter.ts`: text search (case-insensitive ticker prefix OR name substring), multi-select filters (assetClass, region, issuer, distribution, AND logic), maxTer boundary (inclusive) — verify `pnpm test lib/filter.test.ts` is green
 
 ## 2. Repository — wire filters into `list()`
 

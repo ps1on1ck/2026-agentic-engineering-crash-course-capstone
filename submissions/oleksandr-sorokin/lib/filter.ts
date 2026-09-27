@@ -28,7 +28,7 @@ export function filterEtfs(etfs: Etf[], query: ListQuery): Etf[] {
       if (!distribution.includes(etf.distribution)) return false;
     }
 
-    if (maxTer !== undefined) {
+    if (maxTer !== undefined && Number.isFinite(maxTer)) {
       if (etf.ter > maxTer) return false;
     }
 

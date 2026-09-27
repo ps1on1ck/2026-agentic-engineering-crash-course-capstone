@@ -1,7 +1,6 @@
 /**
- * Failing acceptance tests for openspec/changes/03-etf-filters/
+ * Acceptance tests for openspec/changes/03-etf-filters/
  * Covers every scenario in specs/etf-filters/spec.md and specs/etf-list/spec.md.
- * No implementation yet — all tests below must be red until lib/filter.ts is implemented.
  */
 import { describe, expect, it } from "vitest";
 import { filterEtfs } from "./filter";

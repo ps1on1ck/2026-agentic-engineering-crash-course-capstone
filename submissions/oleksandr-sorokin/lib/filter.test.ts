@@ -27,10 +27,10 @@ describe("filterEtfs()", () => {
   });
 
   it("search by name substring returns matching ETFs", () => {
-    const result = filterEtfs(ETFS, { search: "Vanguard" });
+    const result = filterEtfs(ETFS, { search: "vanguard" });
     expect(result.map((e) => e.ticker)).toContain("VWCE");
     result.forEach((e) => {
-      expect(e.ticker.includes("Vanguard") || e.name.includes("Vanguard")).toBe(true);
+      expect(e.ticker.toUpperCase().startsWith("VANGUARD") || e.name.toUpperCase().includes("VANGUARD")).toBe(true);
     });
   });
 
