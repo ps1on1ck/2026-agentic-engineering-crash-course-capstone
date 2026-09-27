@@ -15,9 +15,9 @@ branch="$(git branch --show-current)"
 
 [ -z "$(git status --short)" ] && ok "working tree clean" || bad "working tree clean" "commit or stash first"
 
-git fetch upstream >/dev/null 2>&1 && ok "fetched upstream" || bad "fetched upstream" "add it: git remote add upstream https://github.com/koldovsky/2026-agentic-engineering-crash-course-capstone.git"
+git fetch origin >/dev/null 2>&1 && ok "fetched origin" || bad "fetched origin" "check network / remote URL"
 
-outside="$(git diff --stat upstream/main...HEAD -- . ":!$SUB_DIR" 2>/dev/null)"
+outside="$(git diff --stat origin/main...HEAD -- . ":!$SUB_DIR" 2>/dev/null)"
 [ -z "$outside" ] && ok "no changes outside $SUB_DIR" || bad "no changes outside $SUB_DIR" "found: $outside"
 
 [ -f "$SUB_DIR/docs/evidence.md" ] && ok "docs/evidence.md exists" || bad "docs/evidence.md exists" "run Step 11 first"
