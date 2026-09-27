@@ -16,12 +16,14 @@ vi.mock("next/font/google", () => ({
 }));
 
 // Mock Next.js navigation so jsdom doesn't crash when components import it.
+// mockSearchParamsRef allows per-test overrides for searchParams content.
 const mockPush = vi.fn();
 const mockReplace = vi.fn();
+const mockSearchParamsRef: { search: string } = { search: "" };
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush, replace: mockReplace }),
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => new URLSearchParams(mockSearchParamsRef.search),
   usePathname: () => "/etfs",
   redirect: vi.fn(),
 }));
@@ -83,6 +85,7 @@ const TWENTY_ETFS: Etf[] = Array.from({ length: 20 }, (_, i) => ({
 beforeEach(() => {
   mockPush.mockClear();
   mockReplace.mockClear();
+  mockSearchParamsRef.search = "";
 });
 
 // Scenario: All required columns are present
@@ -93,7 +96,6 @@ describe("EtfTable — 8 required column headers", () => {
         items={TWENTY_ETFS}
         sortBy="name"
         sortDir="asc"
-        hasFilters={false}
       />,
     );
     const required = [
@@ -120,7 +122,6 @@ describe("EtfTable — row links to /etfs/[ticker]", () => {
         items={TWENTY_ETFS}
         sortBy="name"
         sortDir="asc"
-        hasFilters={false}
       />,
     );
     const links = screen.getAllByRole("link");
@@ -139,7 +140,6 @@ describe("EtfTable — sort state in aria-sort and URL", () => {
         items={TWENTY_ETFS}
         sortBy="name"
         sortDir="asc"
-        hasFilters={false}
       />,
     );
     expect(
@@ -153,7 +153,6 @@ describe("EtfTable — sort state in aria-sort and URL", () => {
         items={TWENTY_ETFS}
         sortBy="name"
         sortDir="asc"
-        hasFilters={false}
       />,
     );
     const tickerHeader = screen.getByRole("columnheader", { name: "Ticker" });
@@ -172,7 +171,6 @@ describe("EtfTable — toggle sort direction", () => {
         items={TWENTY_ETFS}
         sortBy="ticker"
         sortDir="asc"
-        hasFilters={false}
       />,
     );
     const tickerHeader = screen.getByRole("columnheader", { name: "Ticker" });
@@ -191,7 +189,6 @@ describe("EtfTable — sort from URL props", () => {
         items={TWENTY_ETFS}
         sortBy="aum"
         sortDir="desc"
-        hasFilters={false}
       />,
     );
     expect(
@@ -201,22 +198,31 @@ describe("EtfTable — sort from URL props", () => {
 });
 
 // Scenario: Empty filtered result
+// EtfTable computes hasFilters internally from useSearchParams; override the ref for these tests.
 describe("EtfTable — empty state when filters active", () => {
+  beforeEach(() => {
+    mockSearchParamsRef.search = "search=foo";
+  });
+
   it("shows 'No ETFs match your filters.' when items is empty and filters are active", () => {
-    render(<EtfTable items={[]} sortBy="name" sortDir="asc" hasFilters={true} />);
+    render(<EtfTable items={[]} sortBy="name" sortDir="asc" />);
     expect(screen.getByText("No ETFs match your filters.")).toBeDefined();
   });
 
   it("shows a 'Clear filters' button in the empty state", () => {
-    render(<EtfTable items={[]} sortBy="name" sortDir="asc" hasFilters={true} />);
+    render(<EtfTable items={[]} sortBy="name" sortDir="asc" />);
     expect(screen.getByRole("button", { name: /clear filters/i })).toBeDefined();
   });
 });
 
 // Scenario: Clear filters button resets the view
 describe("EtfTable — clear filters resets URL", () => {
+  beforeEach(() => {
+    mockSearchParamsRef.search = "search=foo";
+  });
+
   it("clicking 'Clear filters' navigates to /etfs with no params", () => {
-    render(<EtfTable items={[]} sortBy="name" sortDir="asc" hasFilters={true} />);
+    render(<EtfTable items={[]} sortBy="name" sortDir="asc" />);
     fireEvent.click(screen.getByRole("button", { name: /clear filters/i }));
     expect(mockReplace).toHaveBeenCalledWith("/etfs");
   });

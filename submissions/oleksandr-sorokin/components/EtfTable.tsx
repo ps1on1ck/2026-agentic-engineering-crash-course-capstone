@@ -25,16 +25,18 @@ const COLUMNS: Column[] = [
   { header: '1Y Return',   key: 'return1y',    render: (e) => formatPercent(e.return1y) },
 ];
 
+const FILTER_PARAM_KEYS = ['search', 'assetClass', 'region', 'issuer', 'distribution', 'maxTer'];
+
 type Props = {
   items: Etf[];
   sortBy: string;
   sortDir: SortDir;
-  hasFilters: boolean;
 };
 
-export default function EtfTable({ items, sortBy, sortDir, hasFilters }: Props) {
+export default function EtfTable({ items, sortBy, sortDir }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const hasFilters = FILTER_PARAM_KEYS.some((k) => searchParams.has(k));
 
   function handleSort(key: string) {
     const newDir: SortDir =
