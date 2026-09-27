@@ -37,4 +37,4 @@
 
 ## 8. Integration check
 
-- [ ] 8.1 Run `pnpm check` and verify exit code 0; quote the test count in the commit message
+- [x] 8.1 Run `pnpm check` and verify exit code 0; quote the test count in the commit message
