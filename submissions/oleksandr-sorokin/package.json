@@ -14,6 +14,7 @@
     "agents:check": "node scripts/agents-sync.mjs --check",
     "hooks:selftest": "node scripts/hooks-selftest.mjs",
     "agent:log": "node scripts/agent-log-summary.mjs",
+    "agent:loop": "node scripts/agent-loop.mjs",
     "agent:report": "node .agents/skills/agent-log-report/scripts/report.mjs",
     "verify": "node scripts/verify-report.mjs",
     "openspec": "node scripts/openspec.mjs",
