@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 
-redirect('/etfs');
-
 export default function Home() {
+  redirect('/etfs');
   return null;
 }

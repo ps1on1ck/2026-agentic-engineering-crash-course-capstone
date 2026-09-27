@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { Etf } from '@/lib/etf-schema';
 import { formatPercent } from '@/lib/format-percent';
 import { formatAum } from '@/lib/format-aum';
@@ -33,11 +34,16 @@ type Props = {
 
 export default function EtfTable({ items, sortBy, sortDir, hasFilters }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   function handleSort(key: string) {
     const newDir: SortDir =
       key === sortBy && sortDir === 'asc' ? 'desc' : 'asc';
-    router.push(`/etfs?sortBy=${key}&sortDir=${newDir}`);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('sortBy', key);
+    params.set('sortDir', newDir);
+    params.delete('page');
+    router.push(`/etfs?${params}`);
   }
 
   function handleClearFilters() {
@@ -83,11 +89,7 @@ export default function EtfTable({ items, sortBy, sortDir, hasFilters }: Props) 
           <tr key={etf.ticker}>
             {COLUMNS.map((col) => (
               <td key={col.key}>
-                {col.key === 'ticker' ? (
-                  <a href={`/etfs/${etf.ticker}`}>{etf.ticker}</a>
-                ) : (
-                  col.render(etf)
-                )}
+                <Link href={`/etfs/${etf.ticker}`}>{col.render(etf)}</Link>
               </td>
             ))}
           </tr>

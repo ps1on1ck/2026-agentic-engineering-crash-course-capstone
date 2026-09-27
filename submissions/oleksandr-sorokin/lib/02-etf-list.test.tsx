@@ -1,18 +1,13 @@
 /**
- * Failing tests for openspec/changes/02-etf-list/specs/etf-list/spec.md
- * Every test here is intentionally RED — no implementation exists yet.
- *
- * Static imports of non-existent modules (format-aum, EtfTable, EtfPagination)
- * will cause the whole suite to fail at load time until those files are created.
- * Tests against existing modules (app/layout.tsx, app/page.tsx) assert
- * behaviour that hasn't been implemented yet.
+ * Tests for openspec/changes/02-etf-list/specs/etf-list/spec.md
  */
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-
-afterEach(cleanup);
 import type { Etf } from "./etf-schema";
 import { BASE_ETF } from "./test-fixtures";
+
+// afterEach cleanup must be registered after all imports (CR-9).
+afterEach(cleanup);
 
 // Mock Next.js font loader — not available in jsdom.
 vi.mock("next/font/google", () => ({
@@ -31,13 +26,19 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
+// Mock next/link so it renders as a plain <a> in jsdom (CR-7).
+vi.mock("next/link", () => ({
+  default: ({ href, children }: { href: string; children: React.ReactNode }) => (
+    <a href={href}>{children}</a>
+  ),
+}));
+
 // --------------------------------------------------------------------------
-// 1. AUM formatter — lib/format-aum.ts does NOT exist yet → red on import
+// 1. AUM formatter
 // --------------------------------------------------------------------------
 import { formatAum } from "./format-aum";
 
 describe("formatAum", () => {
-  // tasks.md §1 — Scenario: format values in millions and billions
   it("formats a value in the millions as $NNNm (e.g. 980 → $980M)", () => {
     expect(formatAum(980)).toBe("$980M");
   });
@@ -52,26 +53,24 @@ describe("formatAum", () => {
 });
 
 // --------------------------------------------------------------------------
-// 2. Root redirect — app/page.tsx currently renders the scaffold, not a redirect
+// 2. Root redirect — Scenario: Root redirect
 // --------------------------------------------------------------------------
-// Scenario: Root redirect (spec §"Root path redirects to the ETF list")
 describe("app/page.tsx — root redirect", () => {
   it("calls redirect('/etfs') so GET / sends the browser to /etfs", async () => {
-    // Import the navigation module AFTER the vi.mock declaration so we get the spy.
     const nav = await import("next/navigation");
     const redirectSpy = vi.mocked(nav.redirect);
     redirectSpy.mockClear();
 
-    // Dynamically import the page so the redirect fires on module evaluation.
-    // Currently the page renders the scaffold — redirect is never called → red.
-    await import("../app/page");
+    // Render the page component; redirect is called inside the function body.
+    const { default: HomePage } = await import("../app/page");
+    render(<HomePage />);
 
     expect(redirectSpy).toHaveBeenCalledWith("/etfs");
   });
 });
 
 // --------------------------------------------------------------------------
-// 3. EtfTable — components/EtfTable.tsx does NOT exist yet → red on import
+// 3. EtfTable
 // --------------------------------------------------------------------------
 import EtfTable from "../components/EtfTable";
 
@@ -224,7 +223,7 @@ describe("EtfTable — clear filters resets URL", () => {
 });
 
 // --------------------------------------------------------------------------
-// 4. EtfPagination — components/EtfPagination.tsx does NOT exist yet → red
+// 4. EtfPagination
 // --------------------------------------------------------------------------
 import EtfPagination from "../components/EtfPagination";
 
@@ -238,6 +237,11 @@ describe("EtfPagination — Showing X–Y of N count", () => {
   it("shows 'Showing 21–40 of 55' on page 2", () => {
     render(<EtfPagination page={2} total={55} pageSize={20} />);
     expect(screen.getByText("Showing 21–40 of 55")).toBeDefined();
+  });
+
+  it("renders nothing when total is 0 (empty state handled by EtfTable)", () => {
+    const { container } = render(<EtfPagination page={1} total={0} pageSize={20} />);
+    expect(container.firstChild).toBeNull();
   });
 });
 
@@ -267,7 +271,7 @@ describe("EtfPagination — Next button", () => {
 });
 
 // --------------------------------------------------------------------------
-// 5. Disclaimer banner — app/layout.tsx exists but lacks the banner yet
+// 5. Disclaimer banner — app/layout.tsx
 // --------------------------------------------------------------------------
 import RootLayout from "../app/layout";
 

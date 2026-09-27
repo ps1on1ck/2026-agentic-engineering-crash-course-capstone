@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type Props = {
   page: number;
@@ -10,13 +10,18 @@ type Props = {
 
 export default function EtfPagination({ page, total, pageSize }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  if (total === 0) return null;
 
   const start = (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, total);
   const totalPages = Math.ceil(total / pageSize);
 
   function goTo(p: number) {
-    router.push(`/etfs?page=${p}`);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', String(p));
+    router.push(`/etfs?${params}`);
   }
 
   return (
