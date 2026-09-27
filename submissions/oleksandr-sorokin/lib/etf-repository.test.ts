@@ -1,14 +1,14 @@
-import { describe, expect, it, vi } from "vitest";
-import { getByTicker, list } from "./etf-repository";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { DEFAULT_PAGE_SIZE, getByTicker, list } from "./etf-repository";
 
 describe("list()", () => {
   // Scenario: Unfiltered list returns first page
   it.fails("returns at most 20 items, correct total, and page 1 when called with no filters", () => {
     const result = list({});
-    expect(result.items.length).toBeLessThanOrEqual(20);
+    expect(result.items.length).toBeLessThanOrEqual(DEFAULT_PAGE_SIZE);
     expect(result.total).toBeGreaterThan(0);
     expect(result.page).toBe(1);
-    expect(result.pages).toBe(Math.ceil(result.total / 20));
+    expect(result.pages).toBe(Math.ceil(result.total / DEFAULT_PAGE_SIZE));
   });
 
   // Scenario: Search filter narrows results
@@ -54,7 +54,8 @@ describe("getByTicker()", () => {
   it.fails("returns the ETF with the matching ticker (case-insensitive)", () => {
     const all = list({});
     const first = all.items[0];
-    if (!first) return;
+    // CR-5: explicit assertion prevents silent vacuous pass if list returns no items
+    expect(first).toBeDefined();
 
     const result = getByTicker(first.ticker);
     expect(result).not.toBeNull();
@@ -72,13 +73,19 @@ describe("getByTicker()", () => {
 });
 
 describe("corrupt data", () => {
+  // CR-1: afterEach guarantees module-cache reset regardless of assertion outcome,
+  // preventing the mock factory from affecting subsequent test files
+  afterEach(() => {
+    vi.resetModules();
+  });
+
   // Scenario: Corrupt file throws on load
   it.fails("throws a descriptive error when data/etfs.json contains an invalid record", async () => {
     vi.doMock("@/data/etfs.json", () => ({
       default: [{ ticker: "BAD", notAValidField: true }],
     }));
     vi.resetModules();
-    await expect(import("./etf-repository")).rejects.toThrow();
-    vi.resetModules();
+    // SC-3/CR-2: assert the error message is diagnostic, not just "something threw"
+    await expect(import("./etf-repository")).rejects.toThrow(/invalid|schema|validation/i);
   });
 });

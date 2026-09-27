@@ -29,7 +29,12 @@ describe("generate-seed", () => {
     expect(first).toBe(second);
   });
 
-  // Scenario: No network calls — the script must complete and produce valid JSON
+  // Scenario: No network calls
+  // SC-1: the WHEN condition ("without network access") is not mechanically enforced here —
+  // the test verifies the generator produces valid output, but does not block or intercept
+  // network I/O. A script that secretly fetched live data would still pass if the network
+  // were available. Manual verification: confirm generate-seed.mjs contains no import of
+  // node:http, node:https, node-fetch, undici, or similar.
   it.fails("produces valid JSON output without requiring network access", () => {
     runGenerator();
     const content = readFileSync(DATA_FILE, "utf-8");
@@ -37,7 +42,8 @@ describe("generate-seed", () => {
 
     expect(Array.isArray(parsed)).toBe(true);
     expect(parsed.length).toBeGreaterThanOrEqual(35);
-    expect(parsed.length).toBeLessThanOrEqual(50);
+    // CR-4: upper bound aligned with the "approximately 40" test below (was 50, now 45)
+    expect(parsed.length).toBeLessThanOrEqual(45);
   });
 
   it.fails("generates approximately 40 ETF records", () => {

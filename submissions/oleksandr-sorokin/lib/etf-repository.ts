@@ -1,6 +1,8 @@
 // Stub — implementation in task 3.2 (openspec/changes/01-etf-data/)
 import type { Etf } from "./etf-schema";
 
+export const DEFAULT_PAGE_SIZE = 20;
+
 export type ListQuery = {
   search?: string;
   assetClass?: string[];
