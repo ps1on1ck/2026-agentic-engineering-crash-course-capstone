@@ -19,15 +19,18 @@
     "verify": "node scripts/verify-report.mjs",
     "openspec": "node scripts/openspec.mjs",
     "spec:validate": "node scripts/openspec.mjs validate --all --strict --no-interactive",
+    "test:e2e": "playwright test",
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm agents:check && pnpm spec:validate"
   },
   "dependencies": {
     "next": "16.3.6",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
     "@fission-ai/openspec": "^1.13.2",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",

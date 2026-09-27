@@ -35,10 +35,19 @@ export default async function EtfsPage({ searchParams }: Props) {
     maxTer,
   });
 
+  // Reconstruct current URL so the details page can offer a round-trip back link.
+  const urlParams = new URLSearchParams();
+  for (const [key, val] of Object.entries(params)) {
+    if (Array.isArray(val)) val.forEach((v) => urlParams.append(key, v));
+    else if (val !== undefined) urlParams.set(key, val);
+  }
+  const paramStr = urlParams.toString();
+  const currentUrl = `/etfs${paramStr ? `?${paramStr}` : ""}`;
+
   return (
     <main className="flex-1 overflow-x-auto px-4 py-6">
       <EtfFilters />
-      <EtfTable items={result.items} sortBy={sortBy} sortDir={sortDir} />
+      <EtfTable items={result.items} sortBy={sortBy} sortDir={sortDir} currentUrl={currentUrl} />
       <EtfPagination page={result.page} total={result.total} pageSize={DEFAULT_PAGE_SIZE} />
     </main>
   );
