@@ -1,6 +1,6 @@
 {
   "branch": "feat/06-etf-data",
-  "filter": "01-etf-data",
-  "iterations": 1,
-  "startedAt": "2026-09-27T14:56:48.693Z"
+  "filter": "etf-repository",
+  "iterations": 0,
+  "startedAt": "2026-09-27T15:19:45.755Z"
 }
