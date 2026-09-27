@@ -90,19 +90,20 @@ export default function EtfTable({ items, sortBy, sortDir, currentUrl }: Props) 
       <tbody>
         {items.map((etf) => (
           <tr key={etf.ticker}>
-            {COLUMNS.map((col) => (
-              <td key={col.key}>
-                <Link
-                href={
-                  currentUrl
-                    ? `/etfs/${etf.ticker}?ref=${encodeURIComponent(currentUrl)}`
-                    : `/etfs/${etf.ticker}`
-                }
-              >
-                {col.render(etf)}
-              </Link>
-              </td>
-            ))}
+            {COLUMNS.map((col) => {
+              const href = currentUrl
+                ? `/etfs/${etf.ticker}?ref=${encodeURIComponent(currentUrl)}`
+                : `/etfs/${etf.ticker}`;
+              return (
+                <td key={col.key}>
+                  {col.key === "name" ? (
+                    <Link href={href}>{col.render(etf)}</Link>
+                  ) : (
+                    col.render(etf)
+                  )}
+                </td>
+              );
+            })}
           </tr>
         ))}
       </tbody>

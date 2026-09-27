@@ -345,6 +345,56 @@ describe("ETF details page — known ticker", () => {
     const { container } = render(jsx as React.ReactElement);
     expect(container.textContent).toMatch(/IWDA/);
   });
+
+  it("renders the Key metrics section", async () => {
+    const { default: DetailsPage } = await import("../app/etfs/[ticker]/page");
+    const jsx = await DetailsPage({
+      params: Promise.resolve({ ticker: "IWDA" }),
+      searchParams: Promise.resolve({}),
+    });
+    const { container } = render(jsx as React.ReactElement);
+    expect(container.querySelector('[aria-label="Key metrics"]')).toBeDefined();
+  });
+
+  it("renders the Price history section", async () => {
+    const { default: DetailsPage } = await import("../app/etfs/[ticker]/page");
+    const jsx = await DetailsPage({
+      params: Promise.resolve({ ticker: "IWDA" }),
+      searchParams: Promise.resolve({}),
+    });
+    const { container } = render(jsx as React.ReactElement);
+    expect(container.querySelector('[aria-label="Price history"]')).toBeDefined();
+  });
+
+  it("renders the Top holdings section", async () => {
+    const { default: DetailsPage } = await import("../app/etfs/[ticker]/page");
+    const jsx = await DetailsPage({
+      params: Promise.resolve({ ticker: "IWDA" }),
+      searchParams: Promise.resolve({}),
+    });
+    const { container } = render(jsx as React.ReactElement);
+    expect(container.querySelector('[aria-label="Top holdings"]')).toBeDefined();
+  });
+
+  it("renders the Sector allocation section", async () => {
+    const { default: DetailsPage } = await import("../app/etfs/[ticker]/page");
+    const jsx = await DetailsPage({
+      params: Promise.resolve({ ticker: "IWDA" }),
+      searchParams: Promise.resolve({}),
+    });
+    const { container } = render(jsx as React.ReactElement);
+    expect(container.querySelector('[aria-label="Sector allocation"]')).toBeDefined();
+  });
+
+  it("renders the Country allocation section", async () => {
+    const { default: DetailsPage } = await import("../app/etfs/[ticker]/page");
+    const jsx = await DetailsPage({
+      params: Promise.resolve({ ticker: "IWDA" }),
+      searchParams: Promise.resolve({}),
+    });
+    const { container } = render(jsx as React.ReactElement);
+    expect(container.querySelector('[aria-label="Country allocation"]')).toBeDefined();
+  });
 });
 
 // Scenario: Unknown ticker shows 404 page
@@ -399,5 +449,50 @@ describe("ETF details page — back link falls back to /etfs", () => {
     );
     expect(backLink).toBeDefined();
     expect(backLink!.getAttribute("href")).toBe("/etfs");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 8. Return tinting — positive/negative CSS class
+// ---------------------------------------------------------------------------
+// Scenario: Positive return has a green tint, negative return has a red tint
+
+describe("ETF details page — return tinting CSS classes", () => {
+  it("a positive return1y value renders with class 'positive' on the 1Y Return dd", async () => {
+    const { default: DetailsPage } = await import("../app/etfs/[ticker]/page");
+    // BASE_ETF has return1y: 0.12 (positive)
+    const jsx = await DetailsPage({
+      params: Promise.resolve({ ticker: "IWDA" }),
+      searchParams: Promise.resolve({}),
+    });
+    const { container } = render(jsx as React.ReactElement);
+    const dts = Array.from(container.querySelectorAll("dt"));
+    const return1yDt = dts.find((dt) => /1Y Return/i.test(dt.textContent ?? ""));
+    expect(return1yDt).toBeDefined();
+    const dd = return1yDt!.nextElementSibling;
+    expect(dd?.getAttribute("class")).toContain("positive");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 9. not-found.tsx — 404 page content
+// ---------------------------------------------------------------------------
+// Scenario: Unknown ticker shows 404 page
+
+describe("EtfNotFound page — content", () => {
+  it("renders the text 'ETF not found'", async () => {
+    const { default: EtfNotFound } = await import("../app/etfs/[ticker]/not-found");
+    render(<EtfNotFound />);
+    expect(screen.getByText(/ETF not found/i)).toBeDefined();
+  });
+
+  it("renders a 'Back to list' link pointing to /etfs", async () => {
+    const { default: EtfNotFound } = await import("../app/etfs/[ticker]/not-found");
+    const { container } = render(<EtfNotFound />);
+    const link = Array.from(container.querySelectorAll("a")).find((a) =>
+      /back to list/i.test(a.textContent ?? ""),
+    );
+    expect(link).toBeDefined();
+    expect(link!.getAttribute("href")).toBe("/etfs");
   });
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   LineChart,
   Line,
@@ -20,9 +21,22 @@ const RANGES: { label: Range; points: number }[] = [
   { label: "6M", points: 126 },
   { label: "1Y", points: 252 },
 ];
+const VALID_RANGES = RANGES.map((r) => r.label);
 
 export default function PriceChart({ prices, ticker }: Props) {
-  const [range, setRange] = useState<Range>("1Y");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const fromUrl = searchParams.get("range");
+  const [range, setRange] = useState<Range>(
+    VALID_RANGES.includes(fromUrl as Range) ? (fromUrl as Range) : "1Y",
+  );
+
+  function handleRange(r: Range) {
+    setRange(r);
+    const next = new URLSearchParams(searchParams.toString());
+    next.set("range", r);
+    router.replace(`?${next}`, { scroll: false } as Parameters<typeof router.replace>[1]);
+  }
 
   const points = RANGES.find((r) => r.label === range)!.points;
   const data = prices.slice(-points);
@@ -36,7 +50,7 @@ export default function PriceChart({ prices, ticker }: Props) {
             type="button"
             role="tab"
             aria-selected={range === r.label}
-            onClick={() => setRange(r.label)}
+            onClick={() => handleRange(r.label)}
           >
             {r.label}
           </button>

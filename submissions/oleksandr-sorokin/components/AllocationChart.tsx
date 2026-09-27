@@ -22,7 +22,7 @@ export default function AllocationChart({ data, title }: Props) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" unit="%" />
           <YAxis type="category" dataKey="label" width={120} />
-          <Tooltip formatter={(v) => `${v}%`} />
+          <Tooltip formatter={(v) => `${typeof v === "number" ? v.toFixed(2) : v}%`} />
           <Bar dataKey="weight" />
         </BarChart>
       </ResponsiveContainer>

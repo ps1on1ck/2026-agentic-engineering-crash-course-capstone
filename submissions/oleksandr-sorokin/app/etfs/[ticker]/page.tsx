@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getByTicker } from "@/lib/etf-repository";
@@ -19,9 +20,10 @@ export default async function EtfDetailsPage({ params, searchParams }: Props) {
   const { ref } = await searchParams;
 
   const etf = getByTicker(ticker);
-  if (!etf) notFound();
+  if (!etf) return notFound();
 
-  const backHref = ref ? decodeURIComponent(ref) : "/etfs";
+  const decoded = ref ? decodeURIComponent(ref) : "/etfs";
+  const backHref = decoded.startsWith("/") ? decoded : "/etfs";
 
   return (
     <main>
@@ -33,7 +35,7 @@ export default async function EtfDetailsPage({ params, searchParams }: Props) {
         <h1>
           {etf.name} ({etf.ticker})
         </h1>
-        <p>{etf.issuer}</p>
+        <span className="rounded bg-gray-100 px-1.5 py-0.5 text-sm font-medium text-gray-700">{etf.issuer}</span>
         <p>{etf.assetClass}</p>
         <p>{etf.region}</p>
         <p>{etf.distribution}</p>
@@ -80,7 +82,9 @@ export default async function EtfDetailsPage({ params, searchParams }: Props) {
 
       {etf.prices.length > 0 && (
         <section aria-label="Price history">
-          <PriceChart prices={etf.prices} ticker={etf.ticker} />
+          <Suspense>
+            <PriceChart prices={etf.prices} ticker={etf.ticker} />
+          </Suspense>
         </section>
       )}
 
